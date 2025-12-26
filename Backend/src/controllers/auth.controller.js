@@ -89,10 +89,7 @@ exports.login = async (req, res) => {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
   }
-};
-
-
-//register tenant
+}; 
 
 exports.registerTenant = async (req, res) => {
   const {
@@ -145,10 +142,10 @@ exports.registerTenant = async (req, res) => {
 
     const tenantId = tenantResult.rows[0].id;
 
-    // 3️⃣ Hash password
+    
     const passwordHash = await bcrypt.hash(adminPassword, 10);
 
-    // 4️⃣ Create tenant admin
+    
     const userResult = await client.query(
       `INSERT INTO users (tenant_id, email, password_hash, full_name, role)
        VALUES ($1, $2, $3, $4, 'tenant_admin')
@@ -170,8 +167,7 @@ exports.registerTenant = async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
 
-    if (err.code === "23505") {
-      // unique violation
+    if (err.code === "23505") { 
       return res.status(409).json({
         success: false,
         message: "Email already exists for this tenant",

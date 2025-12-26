@@ -20,28 +20,34 @@ export default function Login() {
       saveAuth(res.data.data.token, res.data.data.user);
       const user = res.data.data.user;
 
-if (user.role === "super_admin") {
-  window.location.href = "/tenants";
-} else {
-  window.location.href = "/dashboard";
-}
+      if (user.role === "super_admin") {
+        window.location.href = "/tenants";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-emerald-50">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow w-96"
+        className="bg-white p-8 rounded-2xl shadow-xl w-96"
       >
-        <h2 className="text-xl font-bold mb-4">Login</h2>
+        <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">
+          Login to your Workspace
+        </h2>
 
-        {error && <p className="text-red-600 mb-2">{error}</p>}
+        {error && (
+          <p className="bg-red-100 text-red-700 p-2 rounded mb-4 text-sm">
+            {error}
+          </p>
+        )}
 
         <input
-          className="border p-2 w-full mb-2"
+          className="border border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none p-2 w-full mb-3 rounded-lg"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -49,27 +55,28 @@ if (user.role === "super_admin") {
 
         <input
           type="password"
-          className="border p-2 w-full mb-2"
+          className="border border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none p-2 w-full mb-3 rounded-lg"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
         <input
-          className="border p-2 w-full mb-4"
-          placeholder="Tenant subdomain (leave empty for super admin)"
+          className="border border-emerald-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none p-2 w-full mb-5 rounded-lg"
+          placeholder="Tenant subdomain (optional)"
           value={tenantSubdomain}
           onChange={(e) => setTenantSubdomain(e.target.value)}
         />
 
-        <button className="bg-blue-600 text-white w-full p-2 rounded">
+        <button className="bg-emerald-600 hover:bg-emerald-700 transition text-white w-full p-2 rounded-lg font-semibold">
           Login
         </button>
-        <p className="text-sm mt-4 text-center">
-        New organization?{" "}
-         <a href="/register" className="text-blue-600">
-        Register here
-         </a>
+
+        <p className="text-sm mt-5 text-center text-gray-600">
+          New organization?{" "}
+          <a href="/register" className="text-emerald-600 font-medium hover:underline">
+            Register here
+          </a>
         </p>
       </form>
     </div>

@@ -9,14 +9,11 @@ const {
   listTasks,
   updateTask,
 } = require("../controllers/tasks.controller");
-
-// All task routes require auth + tenant
+ 
 router.use(authenticate, enforceTenant);
-
-// Users + admins can view tasks
+ 
 router.get("/", listTasks);
-
-// Only tenant admin can update task
+ 
 router.put("/:taskId", authorizeRoles("tenant_admin"), updateTask);
 
 module.exports = router;

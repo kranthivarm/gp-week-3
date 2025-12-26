@@ -13,11 +13,6 @@ const {
   updateProject,
   archiveProject,
 } = require("../controllers/projects.controller");
-
-/**
- * LIST PROJECTS
- * tenant_admin + user
- */
 router.get(
   "/",
   authenticate,
@@ -25,11 +20,6 @@ router.get(
   enforceTenant,
   listProjects
 );
-
-/**
- * CREATE PROJECT
- * tenant_admin only
- */
 router.post(
   "/",
   authenticate,
@@ -37,11 +27,6 @@ router.post(
   enforceTenant,
   createProject
 );
-
-/**
- * UPDATE PROJECT
- * tenant_admin only
- */
 router.put(
   "/:projectId",
   authenticate,
@@ -49,11 +34,6 @@ router.put(
   enforceTenant,
   updateProject
 );
-
-/**
- * ARCHIVE PROJECT
- * tenant_admin only
- */
 router.delete(
   "/:projectId",
   authenticate,
@@ -61,12 +41,6 @@ router.delete(
   enforceTenant,
   archiveProject
 );
-
-/**
- * CREATE TASK UNDER PROJECT
- * tenant_admin only
- * POST /api/projects/:projectId/tasks
- */
 router.post(
   "/:projectId/tasks",
   authenticate,

@@ -1,8 +1,5 @@
 const pool = require("../config/db");
 
-/**
- * CREATE PROJECT
- */
 exports.createProject = async (req, res) => {
   const { name, description } = req.body;
  const tenantId = req.user.tenantId;
@@ -23,7 +20,7 @@ exports.createProject = async (req, res) => {
 
 
   try {
-    // 1️⃣ Check project limit
+    
     const limitResult = await pool.query(
       "SELECT max_projects FROM tenants WHERE id = $1",
       [tenantId]
@@ -42,8 +39,7 @@ exports.createProject = async (req, res) => {
         message: "Project limit reached for this subscription",
       });
     }
-
-    // 2️⃣ Create project
+    
     const result = await pool.query(
       `INSERT INTO projects (tenant_id, name, description)
        VALUES ($1, $2, $3)
@@ -60,10 +56,6 @@ exports.createProject = async (req, res) => {
     });
   }
 };
-
-/**
- * LIST PROJECTS
- */
 exports.listProjects = async (req, res) => {
   const tenantId = req.user.tenantId;;
    console.log("request",req);
@@ -77,9 +69,6 @@ exports.listProjects = async (req, res) => {
   res.json({ success: true, data: result.rows });
 };
 
-/**
- * UPDATE PROJECT
- */
 exports.updateProject = async (req, res) => {
   const { projectId } = req.params;
   const { name, description, status } = req.body;
@@ -106,9 +95,6 @@ exports.updateProject = async (req, res) => {
   res.json({ success: true, data: result.rows[0] });
 };
 
-/**
- * ARCHIVE PROJECT (soft delete)
- */
 exports.archiveProject = async (req, res) => {
   const { projectId } = req.params;
   const tenantId = req.tenantId;

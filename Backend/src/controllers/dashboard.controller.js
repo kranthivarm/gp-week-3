@@ -1,16 +1,16 @@
 const pool = require("../config/db");
 
-exports.getDashboardSummary = async (req, res) => {
+exports.DataOfDashBD = async (req, res) => {
   const tenantId = req.user.tenantId;
   const role = req.user.role;
 
-  // Projects count (active only)
+  
   const projectsResult = await pool.query(
     `SELECT COUNT(*) FROM projects WHERE tenant_id = $1 AND status = 'active'`,
     [tenantId]
   );
 
-  // Tasks count (active)
+  
   const tasksResult = await pool.query(
     `
     SELECT COUNT(*)
@@ -21,7 +21,7 @@ exports.getDashboardSummary = async (req, res) => {
     [tenantId]
   );
 
-  // Users count (ONLY for tenant_admin)
+  
   let usersCount = null;
   if (role === "tenant_admin") {
     const usersResult = await pool.query(
@@ -36,7 +36,7 @@ exports.getDashboardSummary = async (req, res) => {
     data: {
       projects: projectsResult.rows[0].count,
       tasks: tasksResult.rows[0].count,
-      users: usersCount, // null for normal users
+      users: usersCount, 
     },
   });
 };

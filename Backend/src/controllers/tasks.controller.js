@@ -1,8 +1,5 @@
 const pool = require("../config/db");
-
-/**
- * CREATE TASK
- */
+ 
 exports.createTask = async (req, res) => {
   const { projectId } = req.params;
   const { title, description, assignedTo, priority, dueDate } = req.body;
@@ -14,8 +11,7 @@ exports.createTask = async (req, res) => {
     });
   }
 
-  try {
-    // 1️⃣ Verify project + get tenantId from project
+  try { 
     const projectResult = await pool.query(
       `
       SELECT id, tenant_id
@@ -33,8 +29,7 @@ exports.createTask = async (req, res) => {
     }
 
     const tenantId = projectResult.rows[0].tenant_id;
-
-    // 2️⃣ Validate assignedTo belongs to same tenant
+ 
     if (assignedTo) {
       const userCheck = await pool.query(
         `SELECT id FROM users WHERE id = $1 AND tenant_id = $2`,
@@ -48,8 +43,7 @@ exports.createTask = async (req, res) => {
         });
       }
     }
-
-    // 3️⃣ Create task
+ 
     const result = await pool.query(
       `
       INSERT INTO tasks (
@@ -100,9 +94,7 @@ exports.createTask = async (req, res) => {
 };
 
 
-/**
- * LIST TASKS (by project)
- */
+ 
 exports.listTasks = async (req, res) => {
   const { projectId } = req.query;
   const tenantId = req.tenantId;
@@ -131,9 +123,7 @@ exports.listTasks = async (req, res) => {
 
 
 
-/**
- * UPDATE TASK
- */
+ 
 exports.updateTask = async (req, res) => {
   const { taskId } = req.params;
   const {

@@ -6,7 +6,6 @@ import { getUser } from "../auth/auth";
 
 export default function TenantSettings() {
   const user = getUser();
-
   const [tenant, setTenant] = useState(null);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -28,16 +27,12 @@ export default function TenantSettings() {
   }, []);
 
   const updateName = async () => {
-    if (!name.trim()) {
-      toast.error("Company name cannot be empty");
-      return;
-    }
-
+    if (!name.trim()) return toast.error("Company name cannot be empty");
     try {
       await api.put(`/tenants/${tenant.id}`, { name });
       toast.success("Company name updated successfully");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Update failed");
+    } catch {
+      toast.error("Update failed");
     }
   };
 
@@ -46,32 +41,36 @@ export default function TenantSettings() {
   return (
     <>
       <Navbar />
-      <div className="p-6 max-w-xl">
-        <h1 className="text-2xl font-bold mb-4">Organization Settings</h1>
+      <div className="p-6 bg-emerald-50 min-h-screen">
+        <div className="max-w-xl mx-auto bg-white shadow rounded-xl p-6">
+          <h1 className="text-2xl font-bold text-emerald-900 mb-4">
+            Organization Settings
+          </h1>
 
-        {/* Company Name (editable) */}
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Company Name</label>
-          <input
-            className="border p-2 w-full"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+          {/* Company Name */}
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Company Name</label>
+            <input
+              className="border p-2 w-full rounded focus:ring-2 focus:ring-emerald-500"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
 
-        <button
-          onClick={updateName}
-          className="bg-blue-600 text-white px-4 py-2 rounded mb-6"
-        >
-          Save Changes
-        </button>
+          <button
+            onClick={updateName}
+            className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 mb-6"
+          >
+            Save Changes
+          </button>
 
-        {/* Read-only info */}
-        <div className="border-t pt-4">
-          <p><strong>Plan:</strong> {tenant.subscription_plan}</p>
-          <p><strong>Status:</strong> {tenant.status}</p>
-          <p><strong>Max Users:</strong> {tenant.max_users}</p>
-          <p><strong>Max Projects:</strong> {tenant.max_projects}</p>
+          {/* Read-only Info */}
+          <div className="border-t pt-4 text-gray-700">
+            <p><strong>Plan:</strong> {tenant.subscription_plan}</p>
+            <p><strong>Status:</strong> {tenant.status}</p>
+            <p><strong>Max Users:</strong> {tenant.max_users}</p>
+            <p><strong>Max Projects:</strong> {tenant.max_projects}</p>
+          </div>
         </div>
       </div>
     </>

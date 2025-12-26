@@ -14,7 +14,6 @@ export default function Dashboard() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        // Projects visible to both tenant_admin & user
         const projectsRes = await api.get("/projects");
 
         let usersCount = 0;
@@ -28,7 +27,7 @@ export default function Dashboard() {
           users: usersCount,
         });
       } catch {
-        // silent fail
+        // silent
       }
     };
 
@@ -38,19 +37,32 @@ export default function Dashboard() {
   return (
     <>
       <Navbar />
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="border p-4 rounded">
-            <h2 className="font-semibold">Projects</h2>
-            <p className="text-2xl">{stats.projects}</p>
+      <div className="bg-emerald-50 min-h-screen p-8">
+        <h1 className="text-3xl font-bold text-emerald-900 mb-8">
+          Dashboard
+        </h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Projects Card */}
+          <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-emerald-500">
+            <h2 className="text-lg font-semibold text-emerald-700">
+              Total Projects
+            </h2>
+            <p className="text-4xl font-bold text-emerald-900 mt-2">
+              {stats.projects}
+            </p>
           </div>
 
+          {/* Users Card */}
           {user.role === "tenant_admin" && (
-            <div className="border p-4 rounded">
-              <h2 className="font-semibold">Users</h2>
-              <p className="text-2xl">{stats.users}</p>
+            <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-emerald-600">
+              <h2 className="text-lg font-semibold text-emerald-700">
+                Organization Users
+              </h2>
+              <p className="text-4xl font-bold text-emerald-900 mt-2">
+                {stats.users}
+              </p>
             </div>
           )}
         </div>

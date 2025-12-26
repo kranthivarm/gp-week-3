@@ -1,9 +1,7 @@
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 
-/**
- * CREATE USER
- */
+ 
 exports.createUser = async (req, res) => {
   const { email, password, fullName, role } = req.body;
   const tenantId = req.tenantId;
@@ -16,8 +14,7 @@ exports.createUser = async (req, res) => {
     return res.status(400).json({ success: false, message: "Invalid role" });
   }
 
-  try {
-    // 1️⃣ Check subscription limit
+  try { 
     const limitResult = await pool.query(
       `SELECT max_users FROM tenants WHERE id = $1`,
       [tenantId]
@@ -36,8 +33,7 @@ exports.createUser = async (req, res) => {
         message: "User limit reached for this subscription",
       });
     }
-
-    // 2️⃣ Create user
+ 
     const passwordHash = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
@@ -56,10 +52,7 @@ exports.createUser = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to create user" });
   }
 };
-
-/**
- * LIST USERS
- */
+ 
 exports.listUsers = async (req, res) => {
   const tenantId = req.tenantId;
 
@@ -72,17 +65,13 @@ exports.listUsers = async (req, res) => {
 
   res.json({ success: true, data: result.rows });
 };
-
-/**
- * UPDATE USER
- */
+ 
 exports.updateUser = async (req, res) => {
   const { userId } = req.params;
   const { fullName, role, isActive } = req.body;
   const tenantId = req.tenantId;
   const requester = req.user;
-
-  // Prevent tenant_admin from deactivating himself
+ 
   if (
     requester.role === "tenant_admin" &&
     requester.userId === userId &&
@@ -93,8 +82,7 @@ exports.updateUser = async (req, res) => {
       message: "You cannot deactivate your own account",
     });
   }
-
-  // Self-update restrictions (non-tenant_admin)
+ 
   if (requester.role !== "tenant_admin") {
     if (requester.userId !== userId) {
       return res.status(403).json({
@@ -139,15 +127,11 @@ exports.updateUser = async (req, res) => {
   });
 };
 
-
-/**
- * DEACTIVATE USER
- */
+ 
 exports.deactivateUser = async (req, res) => {
   const { userId } = req.params;
   const tenantId = req.tenantId;
-
-  // Prevent self-deactivation
+ 
   if (userId === req.user.userId) {
     return res.status(400).json({
       success: false,

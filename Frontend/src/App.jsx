@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar";
 
 export default function App() {
   return (
-<div>
+<div className="bg-emerald-50 min-h-screen p-6">
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />

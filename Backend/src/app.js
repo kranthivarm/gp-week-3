@@ -22,15 +22,12 @@ app.use(
 );
 
 app.use("/api/dashboard", dashboardRoutes);
-
+app.use("/api/projects", projectRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/protected", protectedRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/tasks", taskRoutes);
 app.use("/api/tenants", tenantsRoutes);
-
-
+app.use("/api/tasks", taskRoutes);
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query("SELECT 1");

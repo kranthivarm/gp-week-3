@@ -11,8 +11,7 @@ const {
   updateUser,
   deactivateUser,
 } = require("../controllers/users.controller");
-
-// All user management is tenant_admin only
+ 
 router.use(authenticate, authorizeRoles("tenant_admin"), enforceTenant);
 
 router.post("/", createUser);

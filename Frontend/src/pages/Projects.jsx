@@ -10,16 +10,11 @@ export default function Projects() {
   const currentUser = getUser();
 
   const [projects, setProjects] = useState([]);
-
-  // create form
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
-  // edit state
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({});
-
-  /* ---------- LOAD PROJECTS ---------- */
 
   const loadProjects = async () => {
     try {
@@ -33,8 +28,6 @@ export default function Projects() {
   useEffect(() => {
     loadProjects();
   }, []);
-
-  /* ---------- CREATE PROJECT ---------- */
 
   const createProject = async () => {
     if (!name) {
@@ -53,8 +46,6 @@ export default function Projects() {
     }
   };
 
-  /* ---------- EDIT PROJECT ---------- */
-
   const startEdit = (p) => {
     setEditingId(p.id);
     setForm({
@@ -64,159 +55,145 @@ export default function Projects() {
     });
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setForm({});
-  };
-
   const saveEdit = async (projectId) => {
     try {
-      await api.put(`/projects/${projectId}`, {
-        name: form.name,
-        description: form.description,
-        status: form.status,
-      });
-
-      toast.success("Project updated successfully");
+      await api.put(`/projects/${projectId}`, form);
+      toast.success("Project updated");
       setEditingId(null);
       loadProjects();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Update failed");
+    } catch {
+      toast.error("Update failed");
     }
   };
 
-  /* ---------- DELETE PROJECT ---------- */
-
   const deleteProject = async (projectId) => {
-    if (!window.confirm("Delete this project? This will remove all tasks.")) {
-      return;
-    }
-
+    if (!window.confirm("Delete this project?")) return;
     try {
       await api.delete(`/projects/${projectId}`);
       toast.success("Project deleted");
       loadProjects();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Delete failed");
+    } catch {
+      toast.error("Delete failed");
     }
   };
 
   return (
     <>
       <Navbar />
-      <div className="p-6">
-        <h1 className="text-xl font-bold mb-4">Projects</h1>
+      <div className="bg-emerald-50 min-h-screen p-8">
+        <h1 className="text-3xl font-bold text-emerald-900 mb-6">Projects</h1>
 
         {/* CREATE PROJECT */}
         {currentUser.role === "tenant_admin" && (
-          <div className="border p-4 mb-6 rounded">
-            <h2 className="font-semibold mb-2">Add Project</h2>
+          <div className="bg-white rounded-xl shadow p-6 mb-8">
+            <h2 className="text-lg font-semibold text-emerald-700 mb-4">
+              Add New Project
+            </h2>
 
-            <input
-              className="border p-2 w-full mb-2"
-              placeholder="Project name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div className="grid md:grid-cols-2 gap-4">
+              <input
+                className="border border-emerald-300 p-2 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                placeholder="Project name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
 
-            <input
-              className="border p-2 w-full mb-2"
-              placeholder="Project description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+              <input
+                className="border border-emerald-300 p-2 rounded-lg focus:ring-2 focus:ring-emerald-500"
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
 
             <button
               onClick={createProject}
-              className="bg-green-600 text-white px-4 py-2 rounded"
+              className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg"
             >
-              Add Project
+              Create Project
             </button>
           </div>
         )}
 
-        {/* PROJECT LIST */}
-        <table className="w-full border">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border p-2">Name</th>
-              <th className="border p-2">Description</th>
-              <th className="border p-2">Status</th>
-              <th className="border p-2">Action</th>
-            </tr>
-          </thead>
+        {/* PROJECT CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((p) => {
+            const canEdit =
+              currentUser.role === "tenant_admin" ||
+              currentUser.userId === p.created_by;
 
-          <tbody>
-            {projects.map((p) => {
-              const canEdit =
-                currentUser.role === "tenant_admin" ||
-                currentUser.userId === p.created_by;
+            return (
+              <div
+                key={p.id}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition p-6 border-t-4 border-emerald-500"
+              >
+                {editingId === p.id ? (
+                  <>
+                    <input
+                      className="border p-2 w-full mb-2 rounded"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                    />
 
-              return (
-                <tr key={p.id}>
-                  {/* NAME */}
-                  <td className="border p-2">
-                    {editingId === p.id ? (
-                      <input
-                        className="border p-1 w-full"
-                        value={form.name}
-                        onChange={(e) =>
-                          setForm({ ...form, name: e.target.value })
-                        }
-                      />
-                    ) : (
-                      <span
-                        className="cursor-pointer text-blue-600"
-                        onClick={() => navigate(`/projects/${p.id}`)}
+                    <input
+                      className="border p-2 w-full mb-2 rounded"
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm({ ...form, description: e.target.value })
+                      }
+                    />
+
+                    <select
+                      className="border p-2 w-full mb-3 rounded"
+                      value={form.status}
+                      onChange={(e) =>
+                        setForm({ ...form, status: e.target.value })
+                      }
+                    >
+                      <option value="active">Active</option>
+                      <option value="completed">Completed</option>
+                      <option value="archived">Archived</option>
+                    </select>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => saveEdit(p.id)}
+                        className="text-emerald-600 font-semibold"
                       >
-                        {p.name}
-                      </span>
-                    )}
-                  </td>
-
-                  {/* DESCRIPTION */}
-                  <td className="border p-2">
-                    {editingId === p.id ? (
-                      <input
-                        className="border p-1 w-full"
-                        value={form.description}
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            description: e.target.value,
-                          })
-                        }
-                      />
-                    ) : (
-                      p.description || "—"
-                    )}
-                  </td>
-
-                  {/* STATUS */}
-                  <td className="border p-2">
-                    {editingId === p.id ? (
-                      <select
-                        value={form.status}
-                        onChange={(e) =>
-                          setForm({ ...form, status: e.target.value })
-                        }
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-gray-500"
                       >
-                        <option value="active">Active</option>
-                        <option value="completed">Completed</option>
-                        <option value="archived">Archived</option>
-                      </select>
-                    ) : (
-                      p.status
-                    )}
-                  </td>
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h3
+                      className="text-xl font-bold text-emerald-800 cursor-pointer"
+                      onClick={() => navigate(`/projects/${p.id}`)}
+                    >
+                      {p.name}
+                    </h3>
 
-                  {/* ACTIONS */}
-                  <td className="border p-2">
-                    {canEdit && editingId !== p.id && (
-                      <>
+                    <p className="text-gray-600 mt-2">
+                      {p.description || "No description"}
+                    </p>
+
+                    <span className="inline-block mt-3 text-sm px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                      {p.status}
+                    </span>
+
+                    {canEdit && (
+                      <div className="flex gap-4 mt-4">
                         <button
                           onClick={() => startEdit(p)}
-                          className="text-blue-600 mr-3"
+                          className="text-blue-600"
                         >
                           Edit
                         </button>
@@ -226,31 +203,14 @@ export default function Projects() {
                         >
                           Delete
                         </button>
-                      </>
+                      </div>
                     )}
-
-                    {editingId === p.id && (
-                      <>
-                        <button
-                          onClick={() => saveEdit(p.id)}
-                          className="text-green-600 mr-2"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="text-gray-600"
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );
